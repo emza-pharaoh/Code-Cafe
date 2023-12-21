@@ -134,10 +134,15 @@ def logout():
 def faq():
     return render_template('faq.html')
 
-# ... (your existing code)
+@app.route('/forgot_password')
+def forgot_password():
+    # Implement the logic for the "Forgot Password" page
+    return render_template('forgot_password.html')
 
-if __name__ == '__main__':
-    app.run(debug=True)
+@app.route('/register')
+def register():
+    # Implement the logic for the "Create an Account" page
+    return render_template('register.html')
 
 # Other routes...
 
