@@ -74,6 +74,8 @@ def register():
         session['username'] = username
         return redirect(url_for('profile'))
 
+         
+
     return render_template('register.html')
 
 @app.route('/projects')
