@@ -1,6 +1,12 @@
 # app.py
 from flask import Flask, redirect, render_template, request, session, url_for
-from psutil import users
+from flask_wtf import FlaskForm
+from wtforms import TextAreaField
+
+class BlogForm(FlaskForm):
+    blog_content = TextAreaField('Blog Content')
+    
+registered_users = []
 
 app = Flask(__name__)
 
@@ -33,6 +39,13 @@ users = {
     'jane_smith': {'password': 'secret'},
 }
 
+
+# Add a context processor to make 'user_logged_in' variable available in templates
+@app.context_processor
+def inject_user():
+    return dict(user_logged_in=('username' in session))
+
+
 @app.route('/')
 def home():
     show_buttons = 'username' not in session
@@ -59,35 +72,41 @@ def signin():
 
     return render_template('signin.html', error_message=error_message)
 
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    # Add logic for handling registration form submission (to be implemented)
     if request.method == 'POST':
-        # Retrieve username, email, and password from the form data
+        # Get user details from the registration form
         username = request.form.get('username')
         email = request.form.get('email')
         password = request.form.get('password')
 
-        # Add your registration logic here (e.g., store user data in a database)
+        # Perform registration logic (add user to the list, validate inputs, etc.)
+        # In a real application, you would hash the password and store it securely
 
-        # Assuming successful registration, set session variable and redirect to the user's profile
-        session['username'] = username
-        return redirect(url_for('profile'))
+        # For this example, let's assume registration is successful
+        registered_users.append({'username': username, 'email': email})
 
-         
+        # Redirect the user to their profile page
+        return redirect(url_for('user_profile'))
 
+    # Render the registration template for the 'GET' request
     return render_template('register.html')
+
 
 @app.route('/projects')
 def projects():
     return render_template('projects.html', projects=projects_data)
 
-@app.route('/project_details/<project_name>')
-def project_details(project_name):
-    # Add logic to fetch project details based on the project_name
-    # This could involve querying a database or fetching data from another source
-    # For now, let's just display a simple message
-    return f"Details for {project_name}"
+@app.route('/profile')
+def user_profile():
+    # In a real application, you would fetch user details from the database
+    # For this example, let's assume the first registered user
+    user = registered_users[0] if registered_users else None
+
+    return render_template('profile.html', user=user)
+
+
 
 @app.route('/blog')
 def blog():
@@ -100,10 +119,46 @@ def blog_post_details(post_date, post_topic):
     # For now, let's just display a simple message
     return f"Details for the blog post on {post_date} with the topic {post_topic}"
 
+@app.route('/blog/python-introduction')
+def python_introduction():
+    # Data for the blog post
+    blog_post = {
+        'title': "An Introduction to Python: Your Gateway to Programming Excellence",
+        'content': """
+            ---  # The rest of your content here
+        """
+    }
+
+    return render_template('blog_post_details.html', blog_post=blog_post)
+
+
+@app.route('/write_blog', methods=['GET', 'POST'])
+def write_blog():
+    form = BlogForm()
+    if request.method == 'POST':
+        # Handle the submitted blog content (e.g., save it to a database)
+        blog_content = request.form.get('blog_content')
+        
+        return redirect(url_for('blog'))
+    
+    if form.validate_on_submit():
+        # Process the blog content here (e.g., save it to the database)
+        return redirect(url_for('home'))
+
+    return render_template('write_blog.html')
+
+@app.route('/submit_blog', methods=['POST'])
+def submit_blog():
+    # Handle the form submission here
+    # You can access the blog content using request.form['blog_content']
+    # Add your logic to store the blog content or process it as needed
+    return "Blog submitted successfully"  # You can replace this with a redirect or render_template
+
 @app.route('/about')
 def about():
     return render_template('about.html', social_links=social_links)
 
+# Modify the profile route to use the 'user_logged_in' variable
 @app.route('/profile')
 def profile():
     # Assume user data is fetched from a database
@@ -112,14 +167,9 @@ def profile():
         "email": "john@example.com",
         "bio": "A passionate coder exploring the world of technology.",
     }
-        # Check if the user is logged in
-    if 'username' in session:
-        return render_template('profile.html', user_data=user_data, show_logout=True)
-    else:
-        return redirect(url_for('signin'))
-        # Add more fields as needed
+    
+    return render_template('profile.html', user_data=user_data, user_logged_in=('username' in session))
 
-    return render_template('profile.html', user_data=user_data)
 
 @app.route('/edit_profile')
 def edit_profile():
@@ -140,11 +190,6 @@ def faq():
 def forgot_password():
     # Implement the logic for the "Forgot Password" page
     return render_template('forgot_password.html')
-
-@app.route('/register')
-def register():
-    # Implement the logic for the "Create an Account" page
-    return render_template('register.html')
 
 # Other routes...
 

@@ -25,7 +25,7 @@
             </ul>
         </nav>
         <div id="logo-container">
-            <img src="{{ url_for('static', filename=logo_filename) }}" alt="Code Café Logo" id="logo" style="max-width: 200px;">
+            <img id="logo" src="{{ url_for('static', filename='images/Code Cafe Logo.png') }}" alt="Code Cafe Logo"style="max-width: 200px;">
         </div>
     </header>
 
@@ -40,6 +40,7 @@
         </div>
         <a href="{{ url_for('edit_profile') }}" class="button">Edit Profile</a>
     </section>
+
 
     <!-- Footer -->
     <footer>

@@ -10,33 +10,50 @@
 </head>
 <body>
     <header>
-        <h1>Code Café</h1>
         <nav>
             <ul>
                 <li><a href="{{ url_for('home') }}">Home</a></li>
                 <li><a href="{{ url_for('projects') }}">Projects</a></li>
                 <li><a href="{{ url_for('blog') }}">Blog</a></li>
                 <li><a href="{{ url_for('about') }}">About Us</a></li>
-                <li><a href="{{ url_for('signin') }}">Sign In</a></li>
-                <li><a href="{{ url_for('register') }}">Register</a></li>
-                <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                {% if 'username' in session %}
+                    <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                    <!-- Add the "Write a Blog" button for logged-in users -->
+                    <li><a href="{{ url_for('write_blog') }}" class="button-write-blog">Write a Blog</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('signin') }}">Sign In</a></li>
+                    <li><a href="{{ url_for('register') }}">Register</a></li>
+                {% endif %}
                 <li><a href="{{ url_for('faq') }}">FAQ</a></li>
             </ul>
         </nav>
+        <div id="logo-container">
+            <img id="logo" src="{{ url_for('static', filename='images/Code Cafe Logo.png') }}" alt="Code Cafe Logo" style="max-width: 200px;">
+        </div>
     </header>
 
     <main>
         <h2>Blog</h2>
-        <ul>
+        <div class="blog-list">
+            <!-- Display blog posts with titles, usernames, dates, and "Read More" links -->
             {% for post in posts %}
-                <li>
+                <div class="blog-post">
                     <h3>{{ post.topic }}</h3>
-                    <p>By {{ post.username }} on {{ post.date }} at {{ post.time }}</p>
-                    <p>{{ post.description }}</p>
+                    <p class="meta-info">Posted by {{ post.username }} on {{ post.date }} at {{ post.time }}</p>
+                    <p>{{ post.content }}</p>
                     <a href="{{ url_for('blog_post_details', post_date=post.date, post_topic=post.topic) }}">Read More</a>
-                </li>
+                </div>
             {% endfor %}
-        </ul>
+        </div>
+        <!-- Add the "Write a Blog" button if the user is logged in -->
+        {% if 'username' in session %}
+            <a href="{{ url_for('write_blog') }}" class="button-write-blog">Write a Blog</a>
+        {% endif %}
     </main>
+
+    <footer>
+        <p>&copy; 2023 Code Café. All rights reserved.</p>
+    </footer>
 </body>
 </html>

@@ -1,0 +1,86 @@
+<!-- templates/write_blog.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Include Quill -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <style>
+        #editor-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            border-radius: 5px;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #submit-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        #submit-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+
+    <title>Write a Blog</title>
+</head>
+<body>
+
+  <header>
+      <div id="logo">
+          <img id="logo" src="{{ url_for('static', filename='images/Code Cafe Logo.png') }}" alt="Code Cafe Logo" style="max-width: 50px;">
+      </div>
+      <nav>
+          <ul>
+              <li><a href="{{ url_for('home') }}">Home</a></li>
+              <!-- Add other navigation links as needed -->
+              <li><a href="{{ url_for('profile') }}">Profile</a></li>  <!-- Add this line for the profile link -->
+          </ul>
+      </nav>
+  </header>
+
+  <main>
+      <h1>Write a Blog</h1>
+      <form method="post" action="{{ url_for('submit_blog') }}">
+          {{ form.hidden_tag() }}
+          <div id="editor-container">
+              <div id="blog_content" name="blog_content">{{ form.blog_content }}</div>
+          </div>
+          <br>
+          <input type="submit" value="Submit Blog" id="submit-btn">
+      </form>
+  </main>
+
+  <footer>
+      <p>&copy; 2023 Code Café. All rights reserved.</p>
+  </footer>
+
+  <script>
+      // Initialize Quill
+      var quill = new Quill('#blog_content', {
+          theme: 'snow',  // Specify the theme
+          placeholder: 'Write something amazing...',
+      });
+
+      // Listen for the form submission and update the textarea with HTML content
+      document.querySelector('form').onsubmit = function() {
+          // Populate hidden form on submit
+          document.querySelector('textarea[name="blog_content"]').value = quill.root.innerHTML;
+      };
+  </script>
+
+</body>
+</html>
