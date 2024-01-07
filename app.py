@@ -9,6 +9,7 @@ class BlogForm(FlaskForm):
 registered_users = []
 
 app = Flask(__name__)
+app.secret_key = 'UKHIYE'
 
 # Sample data for blog posts
 blog_posts = [
